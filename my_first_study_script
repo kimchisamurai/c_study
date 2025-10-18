@@ -1,0 +1,52 @@
+#include <stdio.h>
+#include <string.h>
+
+struct Player
+{
+	char playerName[50];
+	int level;
+	int health;
+	int mana;
+};
+
+
+
+int main()
+{
+Player player;
+
+player.level = 1;
+player.health = 100;
+player.mana = 50;
+
+fgets(player.playerName, sizeof(player.playerName), stdin);
+
+int maxNameLength = strlen(player.playerName);
+
+if(player.playerName[maxNameLength - 1] == '\n')
+{
+	player.playerName[maxNameLength - 1] = '\0';
+}
+//
+//
+char filename[50];
+
+snprintf(filename, sizeof(filename), "%s.json", player.playerName);
+//
+//
+FILE* file = fopen(filename, "w");
+
+fprintf(file, "PlayerData:");
+fprintf(file, "Name: %s", player.playerName);
+fprintf(file, "Level: %d", player.level);
+fprintf(file, "Health: %d", player.health);
+fprintf(file, "Mana: %d", player.mana);
+
+fclose(file);
+
+return 0;
+}
+
+
+
+
