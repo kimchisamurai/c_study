@@ -1,0 +1,248 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <time.h>
+#include <windows.h>
+#include <conio.h>
+#include "console_graphics.h"
+// write text slowly letter by letter;
+// chcp 65001
+// whole story and the begining
+// rain sounds
+// add player_gold
+
+struct playerData
+{
+    char name[50];
+    int health;
+    int mana;
+    int level;
+};
+
+int locationDungeon(int player_gold)
+{
+
+}
+
+void locationBlacksmith()
+{
+printf("Blacksmith: Hello stranger!");
+}
+
+void locationEnchantress()
+{
+printf("Judit: Hello stranger!");
+}
+
+void locationTavern()
+{
+printf("You're in Tavern!");
+}
+
+void locationEvergreen()
+{
+printf("You're in Tavern!");
+}
+
+void locationKaelgor()
+{
+printf("You're in Tavern!");
+}
+
+void locationAmarin()
+{
+printf("You're in Tavern!");
+}
+
+
+
+
+void locationVillage()
+{
+printVillageLogo();
+printf("\nYou're in Village! Type which place you want to visit!\n\n");
+printf("#1 - Herald Blacksmith | Master of iron and armor.\n");
+printf("#2 - Judit Bluering | The Enchantress and the Potion Seller.\n");
+printf("#3 - Victor Beerman | Owner of Tavern.\n");
+printf("#4 - Sonya Evergreen | Herbal healer.\n");
+printf("#5 - Kaelgor | Blind man living in village\n");
+printf("#6 - Erin Amarin | Young woman, works in Tavern\n\n");
+printf("Enter a number [1-6]: ");
+
+ 
+char startAdventure;
+    
+int c;
+while ((c = getchar()) != '\n' && c != EOF);
+
+startAdventure = getchar();
+
+switch(startAdventure)
+    {
+    case '1': locationBlacksmith(); break;
+    
+    case '2': locationEnchantress(); break;
+     
+    case '3': locationTavern(); break;
+    
+    case '4': locationEvergreen(); break;   
+    
+    case '5': locationKaelgor(); break;
+    
+    case '6': locationAmarin(); break;
+    }
+}
+
+     
+
+
+void mainMenu()
+{
+  printf("\n#1. Start!\n");
+
+  printf("#2. Exit\n\n");
+  
+  int c;
+  while ((c = getchar()) != '\n' && c != EOF)
+  {
+
+  }
+
+  char menuChoice = getchar();
+    if(menuChoice == '1')
+      {
+        locationVillage();
+      }
+      else
+      {
+        printf("See you again!");
+        return;
+      }
+}
+
+
+void registerPlayer(struct playerData *player)
+{
+    printEnterGame();
+    printf("Welcome to the Dark Ruins!\n\n"); 
+
+    storyText();
+    
+    printf("Please enter your profile name.\n\n");
+    printf("\033[37m\n");
+
+// get name
+    fgets(player->name, sizeof(player->name), stdin);
+
+// check name length   
+    int pNameLength = strlen(player->name);
+
+    if (pNameLength > 0 && player->name[pNameLength - 1] == '\n') 
+    {
+        player->name[pNameLength - 1] = '\0';
+    }
+    else
+    {
+
+    int symbol = 0;
+    while ((symbol = getchar()) != '\n' && symbol != EOF);
+    }
+}
+
+
+
+int loadPlayer(const char *filename, struct playerData *player)
+{
+    FILE *file = fopen(filename, "r");
+    if (!file) return 0;
+
+    char line[128];
+    while (fgets(line, sizeof(line), file)) 
+    {
+        if (sscanf(line, "  \"name\": \"%50[^\"]\"", player->name) == 1) continue;
+        if (sscanf(line, "  \"health\": %d", &player->health) == 1) continue;
+        if (sscanf(line, "  \"mana\": %d", &player->mana) == 1) continue;
+        if (sscanf(line, "  \"level\": %d", &player->level) == 1) continue;
+    }
+
+    fclose(file);
+    return 1; 
+}
+
+
+void savePlayer(struct playerData *player) {
+
+    char filename[26];
+    //sprintf(filename, "characters/%s.json", player->name);
+    sprintf(filename, "%s.json", player->name);
+
+    FILE *file = fopen(filename, "w");
+
+    if (file == NULL) {
+        printf("Error opening file! %s \n", strerror(errno));
+        return;
+    }
+
+    fprintf(file, "{\n");
+    fprintf(file, "\"name\": \"%s\",\n", player->name);
+    fprintf(file, "\"health\": %d,\n", player->health);
+    fprintf(file, "\"mana\": %d,\n", player->mana);
+    fprintf(file, "\"level\": %d\n", player->level);
+    fprintf(file, "}\n");
+
+    fclose(file);
+    printf("\nAccount loaded!\n\n");
+    //
+    //
+    printf("Type 'M' to enter menu!\n\n"); 
+
+    char mainMenuEnter[2];
+    fgets(mainMenuEnter, sizeof(mainMenuEnter), stdin);
+
+    if(mainMenuEnter[0] == 'M' || mainMenuEnter[0] == 'm')
+    {
+        mainMenu();
+    }
+}
+
+
+
+int main(void)
+{
+  //
+ //   char key = getch();
+  //  printf("You enter: %c", key);
+   //srand(time(NULL));
+   // printf("%d", rand() % 15); for fighting
+    struct playerData player;
+    char filename[50];
+
+    registerPlayer(&player);
+    // sprintf(filename, "characters/%s.json", player.name);
+    sprintf(filename, "%s.json", player.name);
+
+    if (loadPlayer(filename, &player))  
+    {
+        printf("\nWelcome back, %s, glad to see you in village again!\n", player.name);
+    } 
+
+    else
+    {
+        printf("\nNo profile found. Creating new character...\n");
+        printf("\nHero %s is coming to the village at the late night!\n", player.name);
+        player.health = 100;
+        player.mana = 50;
+        player.level = 1;
+    }
+
+    printf("\nPlayer: %s\nHealth: %d\nMana: %d\nLevel: %d\n",
+           player.name, player.health, player.mana, player.level);
+
+    savePlayer(&player);
+    getchar();
+    return 0;
+}
+
+
+
+
